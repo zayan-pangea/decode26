@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decode '26 — AI Sales Automation · Bengaluru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+
+/* ─────────────────────────────────────────
+   ROOT & RESET
+───────────────────────────────────────── */
+:root {
+  --bg:        #03030a;
+  --card:      #0c0c18;
+  --card2:     #111122;
+  --border:    rgba(255,255,255,0.06);
+  --glow-b:    rgba(130,80,255,0.25);
+  --v:         #8250ff;
+  --vb:        #a97cff;
+  --vdim:      rgba(130,80,255,0.12);
+  --am:        #f5a623;
+  --amdim:     rgba(245,166,35,0.1);
+  --cy:        #00e5ff;
+  --cydim:     rgba(0,229,255,0.08);
+  --pk:        #ff4fd8;
+  --white:     #f0eef8;
+  --muted:     rgba(240,238,248,0.45);
+  --faint:     rgba(240,238,248,0.18);
+  --mono: 'Space Mono', 'Courier New', monospace;
+  --disp: 'Bebas Neue', 'Arial Black', sans-serif;
+  --body: 'DM Sans', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--body);
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* ─────────────────────────────────────────
+   PERSISTENT BG EFFECTS
+───────────────────────────────────────── */
+#bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(130,80,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(130,80,255,0.045) 1px, transparent 1px);
+  background-size: 68px 68px;
+}
+#scanline {
+  position: fixed; top: -2px; left: 0; width: 100%; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(130,80,255,0.35), transparent);
+  animation: scan 9s linear infinite; pointer-events: none; z-index: 999;
+}
+@keyframes scan { to { top: 100vh; } }
+
+.orb {
+  position: fixed; border-radius: 50%; filter: blur(130px); pointer-events: none; z-index: 0;
+  animation: orb-drift ease-in-out infinite alternate;
+}
+.orb-1 { width: 700px; height: 700px; top: -200px; left: -200px; background: rgba(130,80,255,0.07); animation-duration: 18s; }
+.orb-2 { width: 500px; height: 500px; bottom: 0; right: -150px; background: rgba(0,229,255,0.05); animation-duration: 24s; animation-delay: -8s; }
+.orb-3 { width: 400px; height: 400px; top: 50%; left: 40%; background: rgba(245,166,35,0.04); animation-duration: 30s; animation-delay: -14s; }
+@keyframes orb-drift { to { transform: translate(50px, 60px) scale(1.08); } }
+
+/* noise */
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.032'/%3E%3C/svg%3E");
+}
+
+/* cursor glow */
+#cglow {
+  position: fixed; width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(130,80,255,0.055), transparent 70%);
+  transform: translate(-50%,-50%); pointer-events: none; z-index: 998;
+  transition: left 0.55s ease, top 0.55s ease;
+}
+
+/* ─────────────────────────────────────────
+   CORNERS
+───────────────────────────────────────── */
+.corner {
+  position: fixed; z-index: 200; pointer-events: none;
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.18em;
+  color: var(--faint); text-transform: uppercase;
+}
+.c-tl { top: 20px; left: 20px; }
+.c-tr { top: 20px; right: 20px; text-align: right; }
+.c-bl { bottom: 20px; left: 20px; }
+.c-br { bottom: 20px; right: 20px; text-align: right; }
+
+/* ─────────────────────────────────────────
+   NAV
+───────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 64px;
+  background: rgba(3,3,10,0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s;
+}
+.nav-logo {
+font-family: var(--disp);
+font-size: 22px;
+letter-spacing: 0.05em;
+color: var(--v); / Changed from var(--faint) to purple /
+text-decoration: none;
+cursor: crosshair;
+}
+.nav-logo span { color: var(--v); }
+
+.nav-links {
+  display: flex; gap: 36px; list-style: none;
+}
+.nav-links a {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+  color: var(--muted); text-decoration: none; text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--vb); }
+
+.nav-cta {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+  color: var(--bg); background: var(--v); padding: 10px 22px;
+  text-decoration: none; text-transform: uppercase; cursor: crosshair;
+  transition: background 0.2s, transform 0.2s;
+}
+.nav-cta:hover { background: var(--vb); transform: translateY(-1px); }
+
+.nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+.nav-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--muted); transition: all 0.3s; }
+
+/* ─────────────────────────────────────────
+   SECTIONS GENERAL
+───────────────────────────────────────── */
+section { position: relative; z-index: 10; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+.sec-label {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 36px;
+}
+.sec-num { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; color: rgba(169,124,255,0.65); }
+.sec-title { font-family: var(--disp); font-size: 38px; letter-spacing: 0.05em; color: var(--white); }
+.sec-line { flex: 1; height: 1px; background: var(--border); }
+
+/* reveal animation */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.75s ease, transform 0.75s ease; }
+.reveal.on { opacity: 1; transform: translateY(0); }
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+.reveal-d4 { transition-delay: 0.4s; }
+
+/* ─────────────────────────────────────────
+   HERO
+───────────────────────────────────────── */
+#hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 100px 0 60px;
+}
+
+.hero-ping {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+  opacity: 0; animation: fadeup 0.7s ease 0.2s forwards;
+}
+.ping-dot {
+  width: 9px; height: 9px; border-radius: 50%; background: var(--v);
+  box-shadow: 0 0 14px var(--v); animation: pulse-v 2.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse-v {
+  0%,100% { box-shadow: 0 0 4px var(--v); }
+  50% { box-shadow: 0 0 20px var(--v), 0 0 40px rgba(130,80,255,0.3); }
+}
+.ping-txt {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
+  color: var(--vb); text-transform: uppercase;
+}
+
+.hero-kicker {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em;
+  color: var(--faint); text-transform: uppercase; margin-bottom: 16px;
+  opacity: 0; animation: fadeup 0.7s ease 0.35s forwards;
+}
+
+.hero-title {
+  font-family: var(--disp);
+  font-size: clamp(100px, 19vw, 176px);
+  line-height: 0.86; letter-spacing: 0.02em;
+  opacity: 0; animation: fadeup 0.9s ease 0.45s forwards;
+}
+.ht-white { color: var(--white); }
+.ht-violet { color: var(--vb); }
+.ht-ghost {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--vb);
+}
+
+.hero-sub {
+  margin-top: 28px; max-width: 520px;
+  font-size: 18px; font-weight: 200; color: var(--muted); line-height: 1.7;
+  opacity: 0; animation: fadeup 0.8s ease 0.7s forwards;
+}
+.hero-sub strong { color: var(--white); font-weight: 400; }
+
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 32px;
+  border: 1px solid rgba(245,166,35,0.35); background: var(--amdim);
+  padding: 9px 20px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+  color: var(--am); text-transform: uppercase;
+  opacity: 0; animation: fadeup 0.7s ease 0.95s forwards;
+}
+.hero-pill::before { content: '◈'; }
+
+.hero-stats {
+  display: flex; flex-wrap: wrap; gap: 0;
+  margin-top: 44px; width: fit-content;
+  border: 1px solid var(--border);
+  opacity: 0; animation: fadeup 0.7s ease 1.1s forwards;
+}
+.hstat { padding: 18px 28px; border-right: 1px solid var(--border); }
+.hstat:last-child { border-right: none; }
+.hstat-l { font-family: var(--mono); font-size: 8px; letter-spacing: 0.22em; color: var(--faint); text-transform: uppercase; margin-bottom: 5px; }
+.hstat-v { font-family: var(--mono); font-size: 13px; }
+.hstat-v.am { color: var(--am); }
+.hstat-v.vb { color: var(--vb); }
+.hstat-v.cy { color: var(--cy); }
+
+.hero-divider {
+  width: 100%; height: 1px; margin-top: 60px;
+  background: linear-gradient(90deg, transparent, var(--v), rgba(130,80,255,0.08), transparent);
+  opacity: 0; animation: fade 1s ease 1.4s forwards;
+}
+
+.hero-scroll {
+  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0; animation: fade 1s ease 2s forwards;
+}
+.scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--v), transparent); animation: scroll-pulse 2s ease-in-out infinite; }
+@keyframes scroll-pulse { 0%,100%{opacity:0.3;} 50%{opacity:1;} }
+.scroll-txt { font-family: var(--mono); font-size: 8px; letter-spacing: 0.2em; color: var(--faint); text-transform: uppercase; }
+
+/* ─────────────────────────────────────────
+   ABOUT
+───────────────────────────────────────── */
+#about { padding: 120px 0; }
+
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+}
+@media(max-width:700px) { .about-grid { grid-template-columns: 1fr; } }
+
+.about-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 36px; position: relative; overflow: hidden;
+  transition: border-color 0.3s;
+}
+.about-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(130,80,255,0.04), transparent 55%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.about-card:hover { border-color: var(--glow-b); }
+.about-card:hover::before { opacity: 1; }
+.about-card.full { grid-column: 1 / -1; }
+.about-card.top-v { border-top: 2px solid var(--v); }
+.about-card.top-c { border-top: 2px solid var(--cy); }
+.about-card.top-a { border-top: 2px solid var(--am); }
+
+.ac-icon { font-size: 22px; margin-bottom: 14px; display: block; }
+.ac-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--faint); text-transform: uppercase; margin-bottom: 10px; }
+.ac-text { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.7; }
+.ac-text strong { color: var(--white); font-weight: 400; }
+.ac-text .v { color: var(--vb); }
+.ac-text .a { color: var(--am); }
+.ac-text .c { color: var(--cy); }
+
+/* ─────────────────────────────────────────
+   AGENDA / NIGHT
+───────────────────────────────────────── */
+#agenda { padding: 100px 0; background: rgba(8,6,20,0.6); }
+
+.tl { border-left: 1px solid var(--border); margin-left: 20px; }
+.tl-item {
+  display: flex; align-items: flex-start; gap: 24px;
+  padding: 30px 28px 30px 36px;
+  border-bottom: 1px solid var(--border); position: relative;
+  transition: background 0.25s;
+}
+.tl-item:last-child { border-bottom: none; }
+.tl-item:hover { background: rgba(130,80,255,0.025); }
+.tl-pip {
+  position: absolute; left: -5px; top: 38px;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--bg); border: 1.5px solid var(--v); transition: all 0.3s;
+}
+.tl-item:hover .tl-pip { background: var(--v); box-shadow: 0 0 14px rgba(130,80,255,0.8); }
+.tl-time { font-family: var(--mono); font-size: 12px; color: var(--vb); min-width: 72px; padding-top: 2px; }
+.tl-body { flex: 1; }
+.tl-name { font-size: 16px; font-weight: 400; color: var(--white); margin-bottom: 8px; }
+.tl-desc { font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.65; }
+.tl-badge {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 4px 12px; align-self: flex-start; margin-top: 2px; white-space: nowrap; flex-shrink: 0;
+}
+.bv { background: var(--vdim); color: var(--vb); border: 1px solid rgba(130,80,255,0.3); }
+.ba { background: var(--amdim); color: var(--am); border: 1px solid rgba(245,166,35,0.3); }
+.bc { background: var(--cydim); color: var(--cy); border: 1px solid rgba(0,229,255,0.25); }
+.bg { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+
+/* ─────────────────────────────────────────
+   THE ROOM / ATTENDEES
+───────────────────────────────────────── */
+#room { padding: 120px 0; }
+
+.room-intro { font-size: 15px; font-weight: 300; color: var(--muted); margin-bottom: 40px; line-height: 1.8; }
+.room-intro span { color: var(--vb); }
+
+.profiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 2px; }
+
+.pcard {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 26px; transition: all 0.3s; cursor: default;
+}
+.pcard:hover { border-color: rgba(245,166,35,0.4); background: rgba(245,166,35,0.02); transform: translateY(-3px); }
+.pcard.hl { background: var(--vdim); border-color: rgba(130,80,255,0.22); }
+.pcard.hl:hover { border-color: rgba(130,80,255,0.5); transform: translateY(-3px); }
+
+.pc-role { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; color: var(--am); text-transform: uppercase; margin-bottom: 10px; }
+.pcard.hl .pc-role { color: var(--vb); }
+.pc-title { font-size: 15px; font-weight: 400; color: var(--white); margin-bottom: 8px; }
+.pc-detail { font-size: 12px; 
+  font-weight: 300; 
+  color: rgba(240, 238, 248, 0.8); /* Changed from var(--faint) to 80% opacity for better legibility */
+  line-height: 1.6; 
+}
+.pc-seats { font-family: var(--disp); font-size: 40px; color: var(--vb); display: block; margin-top: 16px; line-height: 1; }
+
+/* ─────────────────────────────────────────
+   DECODES / QUESTIONS
+───────────────────────────────────────── */
+#decodes { padding: 100px 0; background: rgba(8,6,20,0.6); }
+
+.q-intro { font-size: 14px; color: var(--muted); margin-bottom: 28px; font-weight: 300; }
+
+.q-list { display: flex; flex-direction: column; gap: 2px; }
+.q-item {
+  display: flex; align-items: flex-start; gap: 24px;
+  padding: 28px; background: var(--card);
+  border: 1px solid var(--border); border-left: 2px solid transparent;
+  transition: all 0.3s;
+}
+.q-item:nth-child(1) { border-left-color: var(--v); }
+.q-item:nth-child(2) { border-left-color: var(--cy); }
+.q-item:nth-child(3) { border-left-color: var(--am); }
+.q-item:hover { background: rgba(255,255,255,0.015); transform: translateX(5px); }
+.q-num { font-family: var(--disp); font-size: 56px; color: rgba(255,255,255,0.07); line-height: 1; min-width: 52px; }
+.q-text { font-size: 16px; font-weight: 300; color: var(--muted); line-height: 1.7; padding-top: 6px; }
+.q-text em { color: var(--white); font-style: normal; font-weight: 400; }
+
+/* ─────────────────────────────────────────
+   THE CODE / RULES
+───────────────────────────────────────── */
+#code-rules { padding: 120px 0; }
+
+.rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+@media(max-width:600px) { .rules-grid { grid-template-columns: 1fr; } }
+
+.rule-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 32px; transition: border-color 0.3s;
+}
+.rule-card:hover { border-color: rgba(130,80,255,0.3); }
+.rule-icon { font-size: 22px; margin-bottom: 12px; }
+.rule-name { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; color: var(--vb); text-transform: uppercase; margin-bottom: 10px; }
+.rule-body { font-size: 13px; font-weight: 300; color: var(--faint); line-height: 1.7; }
+
+/* ─────────────────────────────────────────
+   NUMBERS / STATS STRIP
+───────────────────────────────────────── */
+#numbers {
+  padding: 80px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: rgba(130,80,255,0.03);
+}
+
+.nums-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+@media(max-width:700px) { .nums-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.num-card {
+  padding: 40px 28px; text-align: center;
+  border-right: 1px solid var(--border);
+}
+.num-card:last-child { border-right: none; }
+.num-val { font-family: var(--disp); font-size: 64px; line-height: 1; margin-bottom: 8px; }
+.num-val.v { color: var(--vb); }
+.num-val.a { color: var(--am); }
+.num-val.c { color: var(--cy); }
+.num-val.w { color: var(--white); }
+.num-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; color: var(--faint); text-transform: uppercase; }
+
+/* ─────────────────────────────────────────
+   REGISTER / CTA
+───────────────────────────────────────── */
+#register { padding: 140px 0; }
+
+.cta-inner {
+  padding: 90px 60px; text-align: center; position: relative; overflow: hidden;
+  background: var(--card); border: 1px solid var(--border);
+}
+.cta-inner::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--v), var(--cy), transparent);
+}
+.cta-inner::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(130,80,255,0.07), transparent);
+  pointer-events: none;
+}
+
+.cta-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; color: var(--vb); text-transform: uppercase; margin-bottom: 20px; position: relative; }
+.cta-h {
+  font-family: var(--disp); font-size: clamp(54px, 8vw, 96px); line-height: 0.9;
+  color: var(--white); margin-bottom: 24px; position: relative;
+}
+.cta-h .ghost { color: transparent; -webkit-text-stroke: 1.5px var(--vb); }
+.cta-sub { font-size: 16px; font-weight: 300; color: var(--muted); max-width: 440px; margin: 0 auto 48px; line-height: 1.7; position: relative; }
+
+.cta-form { display: flex; gap: 0; max-width: 480px; margin: 0 auto; position: relative; }
+.cta-input {
+  flex: 1; padding: 16px 20px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-right: none; color: var(--white); font-family: var(--mono); font-size: 12px;
+  outline: none; transition: border-color 0.2s;
+}
+.cta-input::placeholder { color: var(--faint); }
+.cta-input:focus { border-color: var(--v); }
+.cta-submit {
+  padding: 16px 32px; background: var(--v); color: var(--white);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; border: none; cursor: crosshair;
+  transition: background 0.2s, transform 0.2s;
+}
+.cta-submit:hover { background: var(--vb); transform: translateY(-2px); }
+
+.cta-note { margin-top: 20px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; color: var(--faint); position: relative; }
+
+/* blink */
+.blink::after { content: '_'; color: var(--vb); animation: bl 1s step-end infinite; }
+@keyframes bl { 50%{opacity:0;} }
+
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+footer {
+  position: relative; z-index: 10;
+  border-top: 1px solid var(--border);
+  padding: 48px 0 32px;
+}
+
+.foot-inner {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px;
+}
+@media(max-width:700px) { .foot-inner { grid-template-columns: 1fr; } }
+
+.foot-brand { font-family: var(--disp); font-size: 28px; letter-spacing: 0.06em; color: var(--faint); }
+.foot-brand span { color: var(--v); }
+.foot-tagline { font-size: 12px; font-weight: 300; color: var(--faint); margin-top: 8px; line-height: 1.6; }
+
+.foot-col-title { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--faint); text-transform: uppercase; margin-bottom: 16px; }
+.foot-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.foot-links a { font-size: 13px; font-weight: 300; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.foot-links a:hover { color: var(--vb); }
+
+.foot-bottom {
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  padding-top: 24px; border-top: 1px solid var(--border);
+}
+.foot-copy { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; color: var(--faint); }
+.foot-conf { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; color: var(--faint); }
+
+/* ─────────────────────────────────────────
+   MOBILE NAV
+───────────────────────────────────────── */
+#mobile-menu {
+  display: none; position: fixed; inset: 0; z-index: 490;
+  background: rgba(3,3,10,0.97); backdrop-filter: blur(20px);
+  flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+}
+#mobile-menu.open { display: flex; }
+#mobile-menu a {
+  font-family: var(--mono); font-size: 14px; letter-spacing: 0.2em;
+  color: var(--muted); text-decoration: none; text-transform: uppercase;
+  transition: color 0.2s;
+}
+#mobile-menu a:hover { color: var(--vb); }
+#mobile-menu .mm-cta {
+  margin-top: 12px; background: var(--v); color: var(--white);
+  padding: 14px 36px;
+}
+
+/* ─────────────────────────────────────────
+   ANIMATIONS
+───────────────────────────────────────── */
+@keyframes fadeup { from{opacity:0;transform:translateY(22px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fade { from{opacity:0;} to{opacity:1;} }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media(max-width:860px) {
+  nav { padding: 0 24px; }
+  .nav-links, .nav-cta { display: none; }
+  .nav-hamburger { display: flex; }
+  .wrap { padding: 0 24px; }
+  .hero-title { font-size: clamp(72px, 18vw, 120px); }
+  .hero-stats { flex-wrap: wrap; }
+  .hstat { padding: 14px 18px; }
+  .cta-inner { padding: 60px 28px; }
+  .cta-form { flex-direction: column; }
+  .cta-input { border-right: 1px solid var(--border); border-bottom: none; }
+  .num-val { font-size: 48px; }
+  .nums-grid { gap: 0; }
+  .num-card { border-right: none; border-bottom: 1px solid var(--border); padding: 28px; }
+  .num-card:last-child { border-bottom: none; }
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--v); border-radius: 2px; }
+
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div id="bg-grid"></div>
+<div id="scanline"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div id="cglow"></div>
+
+<!-- CORNERS -->
+<div class="corner c-tl">DCO//2026</div>
+<div class="corner c-tr">BLR_IN</div>
+<div class="corner c-bl" id="seat-corner">48 SEATS LEFT</div>
+<div class="corner c-br">22.05.2026</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo"><span>D</span>ECODE '26</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#agenda">The Night</a></li>
+    <li><a href="#room">The Room</a></li>
+    <li><a href="#decodes">Decodes</a></li>
+    <li><a href="#code-rules">The Code</a></li>
+  </ul>
+  <a href="#register" class="nav-cta">Request Seat →</a>
+  <div class="nav-hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu">
+  <a href="#about" class="mm-link">About</a>
+  <a href="#agenda" class="mm-link">The Night</a>
+  <a href="#room" class="mm-link">The Room</a>
+  <a href="#decodes" class="mm-link">Decodes</a>
+  <a href="#code-rules" class="mm-link">The Code</a>
+  <a href="#register" class="mm-cta">Request Seat →</a>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HERO
+═══════════════════════════════════════ -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-ping">
+      <div class="ping-dot"></div>
+      <span class="ping-txt">Invite only · 50 seats · Bengaluru · May 2026</span>
+    </div>
+
+    <div class="hero-kicker">AI Sales Automation · Invite-Only · Bengaluru</div>
+
+    <h1 class="hero-title">
+      <span class="ht-white">DE</span><span class="ht-ghost">CODE</span><br>
+      <span class="ht-white">'26</span>
+    </h1>
+
+    <p class="hero-sub">
+      Bengaluru's sharpest AI Sales decision-makers. One Friday night. Off the record.<br>
+      <strong>Energy up. Music on. Real talk about AI Sales Automation.</strong><br>
+      No panels. No pitches. No bullshit.
+    </p>
+
+    <div class="hero-pill">An Invite-Only Evening &nbsp;—&nbsp; Friday Night, Bengaluru</div>
+
+    <div class="hero-stats">
+      <div class="hstat">
+        <div class="hstat-l">Date</div>
+        <div class="hstat-v am">Fri, 22 May 2026</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-l">Doors Open</div>
+        <div class="hstat-v">7:00 PM</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-l">Capacity</div>
+        <div class="hstat-v vb">50 Only</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-l">Venue</div>
+        <div class="hstat-v cy">TBA</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-l">Dress</div>
+        <div class="hstat-v">Smart Dark</div>
+      </div>
+    </div>
+
+    <div class="hero-divider"></div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <div class="scroll-txt">Scroll</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     NUMBERS STRIP
+═══════════════════════════════════════ -->
+<section id="numbers">
+  <div class="wrap">
+    <div class="nums-grid">
+      <div class="num-card reveal">
+        <div class="num-val v">50</div>
+        <div class="num-label">Curated Seats</div>
+      </div>
+      <div class="num-card reveal reveal-d1">
+        <div class="num-val a">1</div>
+        <div class="num-label">Friday Night</div>
+      </div>
+      <div class="num-card reveal reveal-d2">
+        <div class="num-val c">3</div>
+        <div class="num-label">Live AI Demos</div>
+      </div>
+      <div class="num-card reveal reveal-d3">
+        <div class="num-val w">0</div>
+        <div class="num-label">Vendor Pitches</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════ -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-label reveal">
+      <span class="sec-num">01 //</span>
+      <h2 class="sec-title">WHAT IS DECODE</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-card full top-v reveal">
+        <span class="ac-icon">◈</span>
+        <div class="ac-label">The Concept</div>
+        <div class="ac-text">
+          <strong>Decode '26</strong> is a <span class="v">closed-door evening for 50 decision-makers</span> who evaluate, buy, and deploy AI Sales Automation tools across Bengaluru's B2B companies. Not a conference. Not a webinar. Not a vendor event.<br><br>
+          The name says it all — we're here to <span class="v">decode what's real</span> about AI Sales Automation from the hype, the noise, and the LinkedIn hot takes. Think: a private venue revealed closer to the date, <span class="a">good energy</span>, a curated playlist, and 50 of the city's sharpest sales technology decision-makers having the conversations that don't happen on stage.
+        </div>
+      </div>
+      <div class="about-card top-c reveal reveal-d1">
+        <span class="ac-icon">⚡</span>
+        <div class="ac-label">The Theme</div>
+        <div class="ac-text">
+          <strong>AI Sales Automation in 2026</strong> — automated outreach, agentic SDRs, intelligent pipeline management, and AI-led deal intelligence. What's actually working, what's been overhyped, and what's coming next. No theory. Just what practitioners are actually seeing.
+        </div>
+      </div>
+      <div class="about-card top-a reveal reveal-d2">
+        <span class="ac-icon">🔒</span>
+        <div class="ac-label">The Code</div>
+        <div class="ac-text">
+          <strong>Chatham House Rule.</strong> Nothing leaves the room with attribution. No recording. No screenshots. No live-tweeting. What's decoded here, <span class="a">stays decoded here.</span> That's the deal.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     AGENDA
+═══════════════════════════════════════ -->
+<section id="agenda">
+  <div class="wrap">
+    <div class="sec-label reveal">
+      <span class="sec-num">02 //</span>
+      <h2 class="sec-title">THE NIGHT</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="tl reveal">
+      <div class="tl-item">
+        <div class="tl-pip"></div>
+        <div class="tl-time">19:00</div>
+        <div class="tl-body">
+          <div class="tl-name">Doors Crack Open — Walk In, Get Loose</div>
+          <div class="tl-desc">The playlist is already running. The room is already charged. Walk in, settle in, and let it hit. No schedules, no badges, no forced energy — just the room doing its thing naturally.</div>
+        </div>
+        <div class="tl-badge ba">Doors Open</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-pip"></div>
+        <div class="tl-time">19:30</div>
+        <div class="tl-body">
+          <div class="tl-name">The State of AI Sales — 10-min Rapid Fire</div>
+          <div class="tl-desc">Host drops 10 sharp data points on where AI Sales Automation actually stands in 2026 — adoption rates, real ROI numbers, failure patterns, and the tools Bengaluru companies are betting on. No deck. Just facts, fast.</div>
+        </div>
+        <div class="tl-badge bv">Rapid Fire</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-pip"></div>
+        <div class="tl-time">19:45</div>
+        <div class="tl-body">
+          <div class="tl-name">Live Demo Corner — AI Sales Tools, Unfiltered</div>
+          <div class="tl-desc">Three rotating stations. Each runs a live 8-min walkthrough: (1) Agentic SDR outreach in the wild, (2) AI-powered deal intelligence & pipeline scoring, (3) Automated follow-up and hyper-personalised sequences. Move freely. No forced attention.</div>
+        </div>
+        <div class="tl-badge bc">Live & Raw</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-pip"></div>
+        <div class="tl-time">20:30</div>
+        <div class="tl-body">
+          <div class="tl-name">The Decode Drop — Hot Takes, Open Floor</div>
+          <div class="tl-desc">Three spicy questions on AI Sales Automation hit the room. No stage, no podium, no hand-raising. Got a take? Throw it. 60 seconds each. The goal is sparks, not consensus. Facilitator keeps the energy crackling.</div>
+        </div>
+        <div class="tl-badge bv">Unfiltered</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-pip"></div>
+        <div class="tl-time">21:15</div>
+        <div class="tl-body">
+          <div class="tl-name">Round Two — The Room Opens Up</div>
+          <div class="tl-desc">The room resets. Host sparks 5 curated one-on-one collisions — people who genuinely need to know each other based on their AI Sales stack and buying stage. The rest? Pure organic energy.</div>
+        </div>
+        <div class="tl-badge ba">Electric</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-pip"></div>
+        <div class="tl-time">21:50</div>
+        <div class="tl-body">
+          <div class="tl-name">The Decode Brief — One Line, Real Talk</div>
+          <div class="tl-desc">Everyone drops one sentence: the rawest thing they're walking away with tonight. Captured live. Shared with all 50 attendees within 72 hours. No fluff, no attribution.</div>
+        </div>
+        <div class="tl-badge bc">Real Talk</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-pip"></div>
+        <div class="tl-time">22:00</div>
+        <div class="tl-body">
+          <div class="tl-name">After Hours — The Night's Just Getting Started</div>
+          <div class="tl-desc">Music turns up. Lights go lower. The space stays open. Zero agenda. Some of the best partnerships, hires, and deals in Bengaluru have been born at this exact hour.</div>
+        </div>
+        <div class="tl-badge bg">Stay On</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     THE ROOM
+═══════════════════════════════════════ -->
+<section id="room">
+  <div class="wrap">
+    <div class="sec-label reveal">
+      <span class="sec-num">03 //</span>
+      <h2 class="sec-title">THE ROOM</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <p class="room-intro reveal">
+      50 seats. Every one earned. Curated for one thing: <span>decision-making authority over AI Sales tools.</span> Zero vendor reps.
+    </p>
+
+    <div class="profiles">
+      <div class="pcard reveal">
+        <div class="pc-role">Primary Buyer</div>
+        <div class="pc-title">VP Sales / Head of Sales</div>
+        <div class="pc-detail">Signs off on AI Sales Automation platforms. Highest decision-making weight in the room.</div>
+      </div>
+      <div class="pcard reveal reveal-d1">
+        <div class="pc-role">Revenue Strategy</div>
+        <div class="pc-title">Chief Revenue Officer</div>
+        <div class="pc-detail">Connects AI Sales tools to revenue outcomes. Drives the business case at board level.</div>
+      </div>
+      <div class="pcard reveal reveal-d2">
+        <div class="pc-role">Tech Evaluator</div>
+        <div class="pc-title">VP / Head of Sales Ops</div>
+        <div class="pc-detail">Evaluates, integrates, and manages the AI Sales stack daily. Makes or breaks adoption.</div>
+      </div>
+      <div class="pcard reveal reveal-d3">
+        <div class="pc-role">Demand Generation</div>
+        <div class="pc-title">VP Marketing / Head of Growth</div>
+        <div class="pc-detail">Controls AI outreach, lead scoring, top-of-funnel automation. Co-buyer of most SDR AI tools.</div>
+      </div>
+      <div class="pcard reveal">
+        <div class="pc-role">Platform Decision</div>
+        <div class="pc-title">CTO / IT Head</div>
+        <div class="pc-detail">Manages CRM integrations and data architecture that determines which AI tools are even viable.</div>
+      </div>
+      <div class="pcard reveal reveal-d1">
+        <div class="pc-role">Founder Buyer</div>
+        <div class="pc-title">CEO / Co-Founder (Series A–C)</div>
+        <div class="pc-detail">Making the first AI Sales Automation platform decision right now. High urgency, open mind.</div>
+      </div>
+      <div class="pcard reveal reveal-d2">
+        <div class="pc-role">Post-Sale AI</div>
+        <div class="pc-title">VP Customer Success</div>
+        <div class="pc-detail">Deploys AI for retention, health scoring, and expansion at the sales-to-success handoff.</div>
+      </div>
+      <div class="pcard hl reveal reveal-d3">
+        <div class="pc-role">Total</div>
+        <div class="pc-title">Decision-Maker Room</div>
+        <div class="pc-detail">B2B SaaS · Fintech · Healthtech · Manufacturing · Logistics — all Bengaluru-based.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     DECODES
+═══════════════════════════════════════ -->
+<section id="decodes">
+  <div class="wrap">
+    <div class="sec-label reveal">
+      <span class="sec-num">04 //</span>
+      <h2 class="sec-title">THE DECODES</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <p class="q-intro reveal">Three questions on AI Sales Automation. No right answers. Just what you actually believe.</p>
+
+    <div class="q-list">
+      <div class="q-item reveal">
+        <div class="q-num">01</div>
+        <div class="q-text">Your AI SDR is firing 500 personalised emails a day and response rates are climbing. But your best reps are quietly threatening to quit because they feel replaceable. <em>What do you do?</em></div>
+      </div>
+      <div class="q-item reveal reveal-d1">
+        <div class="q-num">02</div>
+        <div class="q-text">You've evaluated six AI Sales Automation platforms in the last year. <em>What's the single biggest lie every vendor told you</em> — and what does the reality actually look like?</div>
+      </div>
+      <div class="q-item reveal reveal-d2">
+        <div class="q-num">03</div>
+        <div class="q-text">By 2028, Gartner says 60% of B2B seller interactions will happen through AI-driven interfaces. <em>Is your sales org actually ready for that</em> — or are you quietly hoping it doesn't happen that fast?</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     THE CODE
+═══════════════════════════════════════ -->
+<section id="code-rules">
+  <div class="wrap">
+    <div class="sec-label reveal">
+      <span class="sec-num">05 //</span>
+      <h2 class="sec-title">THE CODE</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="rules-grid">
+      <div class="rule-card reveal">
+        <div class="rule-icon">🎤</div>
+        <div class="rule-name">No Pitching</div>
+        <div class="rule-body">This is not a sales event. If you're here to pitch, we've made a mistake on the invite. The night has better things in store and we'd hate to waste that on you.</div>
+      </div>
+      <div class="rule-card reveal reveal-d1">
+        <div class="rule-icon">🔇</div>
+        <div class="rule-name">Chatham House Rule</div>
+        <div class="rule-body">Everything said in this room is off-record. Share insights. Never attribute them. No screenshots. No live-tweeting. Decode it, don't broadcast it.</div>
+      </div>
+      <div class="rule-card reveal reveal-d2">
+        <div class="rule-icon">📵</div>
+        <div class="rule-name">No Recording</div>
+        <div class="rule-body">No audio. No video. Phones down during sessions. The only record is the Decode Brief — authored collectively by the room.</div>
+      </div>
+      <div class="rule-card reveal reveal-d3">
+        <div class="rule-icon">🪑</div>
+        <div class="rule-name">Show Up</div>
+        <div class="rule-body">We hold your seat until 7:15 PM. Can't make it? 48 hours notice. Someone is genuinely waiting for that seat.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     REGISTER / CTA
+═══════════════════════════════════════ -->
+<section id="register">
+  <div class="wrap">
+    <div class="cta-inner reveal">
+      <div class="cta-tag">// Request Your Seat</div>
+      <div class="cta-h">
+        CAN YOU<br><span class="ghost">DECODE<span class="blink"></span></span>
+      </div>
+      <p class="cta-sub">50 seats. Invite only. If you're reading this, you're already being considered. Don't sit on it.</p>
+    <div class="cta-form" style="display: flex; flex-direction: column; gap: 12px; max-width: 480px; margin: 0 auto; position: relative;">
+  <input class="cta-input" type="text" name="Name" id="cta-name" placeholder="Full Name" style="border-right: 1px solid var(--border);">
+  <input class="cta-input" type="text" name="Company" id="cta-company" placeholder="Company Name" style="border-right: 1px solid var(--border);">
+  <input class="cta-input" type="text" name="Job" id="cta-job" placeholder="Job Title" style="border-right: 1px solid var(--border);">
+  <input class="cta-input" type="tel" name="Phone" id="cta-phone" placeholder="Phone Number" style="border-right: 1px solid var(--border);">
+  <input class="cta-input" type="email" name="Email" id="cta-email" placeholder="your@company.com" style="border-right: 1px solid var(--border);">
+  <button class="cta-submit" id="submit-btn" style="width: 100%; border: none; margin-top: 5px;">Request Access →</button>
+</div>
+      <div class="cta-note">Confirmation within 48 hrs · Venue TBA — revealed on acceptance · Fri 22 May 2026 · Dress: Smart Dark</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-inner">
+      <div>
+        <div class="foot-brand"><span>D</span>ECODE '26</div>
+        <div class="foot-tagline">AI Sales Automation · Bengaluru<br>Friday, 22 May 2026 · Invite Only</div>
+      </div>
+      <div>
+        <div class="foot-col-title">Navigate</div>
+        <ul class="foot-links">
+          <li><a href="#about">What is Decode</a></li>
+          <li><a href="#agenda">The Night</a></li>
+          <li><a href="#room">The Room</a></li>
+          <li><a href="#decodes">The Decodes</a></li>
+          <li><a href="#code-rules">The Code</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="foot-col-title">Details</div>
+        <ul class="foot-links">
+          <li><a href="#">Friday, 22 May 2026</a></li>
+          <li><a href="#">7:00 PM onwards</a></li>
+          <li><a href="#">Venue: TBA, Bengaluru</a></li>
+          <li><a href="#">Dress: Smart Dark</a></li>
+          <li><a href="#register">Request a Seat →</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div class="foot-copy">© Decode '26 · Bengaluru · All rights reserved</div>
+      <div class="foot-conf">Confidential — Not for public distribution</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ─────────────────────────────────────────
+   JAVASCRIPT
+───────────────────────────────────────── -->
+<script>
+// Cursor glow
+const cg = document.getElementById('cglow');
+document.addEventListener('mousemove', e => {
+  cg.style.left = e.clientX + 'px';
+  cg.style.top  = e.clientY + 'px';
+});
+
+// Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
+revealEls.forEach(el => io.observe(el));
+
+// Seat counter
+const sc = document.getElementById('seat-corner');
+let seats = 48;
+setInterval(() => {
+  if (Math.random() < 0.18 && seats > 36) {
+    seats--;
+    sc.textContent = seats + ' SEATS LEFT';
+  }
+}, 8000);
+
+// Mobile menu
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+document.querySelectorAll('.mm-link, .mm-cta').forEach(el => {
+  el.addEventListener('click', () => mobileMenu.classList.remove('open'));
+});
+
+// Nav active on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--vb)' : '';
+  });
+});
+
+// CTA submit
+document.getElementById('submit-btn').addEventListener('click', async function(e) {
+  e.preventDefault();
+  
+  const btn = this;
+  const data = {
+    name: document.getElementById('cta-name').value,
+    company: document.getElementById('cta-company').value,
+    job: document.getElementById('cta-job').value,
+    phone: document.getElementById('cta-phone').value,
+    email: document.getElementById('cta-email').value
+  };
+
+  // Simple validation: check if Email and Name are present
+  if (data.email && data.email.includes('@') && data.name.length > 1) {
+    btn.textContent = 'Sending...';
+    
+    try {
+      const response = await fetch('https://formspree.io/f/mpqornje', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        btn.textContent = 'Request Sent ✓';
+        btn.style.background = '#22c55e';
+        // Reset fields
+        document.querySelectorAll('.cta-input').forEach(input => input.value = '');
+      } else {
+        btn.textContent = 'Error — Try Again';
+      }
+    } catch (err) {
+      console.error(err);
+      btn.textContent = 'Connection Error';
+    }
+  } else {
+    // If validation fails
+    btn.textContent = 'Check Fields';
+    btn.style.background = 'var(--am)'; // Turns Amber to alert you
+    
+    setTimeout(() => {
+      btn.textContent = 'Request Access →';
+      btn.style.background = 'var(--v)';
+    }, 2000);
+  }
+});
+</script>
+</body>
+</html>
