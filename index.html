@@ -193,12 +193,16 @@ section { position: relative; z-index: 10; }
   opacity: 0; animation: fadeup 0.7s ease 0.35s forwards;
 }
 
+/* 1. Fluid Typography for the Hero Title */
 .hero-title {
   font-family: var(--disp);
-  font-size: clamp(100px, 19vw, 176px);
-  line-height: 0.86; letter-spacing: 0.02em;
-  opacity: 0; animation: fadeup 0.9s ease 0.45s forwards;
+  /* Scales between 60px on small screens and 176px on large screens */
+  font-size: clamp(60px, 15vw, 176px); 
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  word-break: break-word;
 }
+
 .ht-white { color: var(--white); }
 .ht-violet { color: var(--vb); }
 .ht-ghost {
@@ -229,6 +233,7 @@ section { position: relative; z-index: 10; }
   border: 1px solid var(--border);
   opacity: 0; animation: fadeup 0.7s ease 1.1s forwards;
 }
+
 .hstat { padding: 18px 28px; border-right: 1px solid var(--border); }
 .hstat:last-child { border-right: none; }
 .hstat-l { font-family: var(--mono); font-size: 8px; letter-spacing: 0.22em; color: var(--faint); text-transform: uppercase; margin-bottom: 5px; }
@@ -290,6 +295,7 @@ section { position: relative; z-index: 10; }
 /* ─────────────────────────────────────────
    AGENDA / NIGHT
 ───────────────────────────────────────── */
+
 #agenda { padding: 100px 0; background: rgba(8,6,20,0.6); }
 
 .tl { border-left: 1px solid var(--border); margin-left: 20px; }
@@ -320,6 +326,46 @@ section { position: relative; z-index: 10; }
 .bc { background: var(--cydim); color: var(--cy); border: 1px solid rgba(0,229,255,0.25); }
 .bg { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
 
+@media (max-width: 768px) {
+  /* Prevent the vertical "pillar" text wrapping */
+  .tl-item {
+    flex-direction: row; /* Force horizontal layout */
+    align-items: flex-start;
+    gap: 15px; /* Reduce gap for tighter screens */
+    padding: 24px 15px 24px 25px; /* Tighten internal padding */
+  }
+
+  .tl-time {
+    min-width: 50px; /* Smaller footprint for the time */
+    font-size: 11px;
+  }
+
+  .tl-pip {
+    left: -5px; /* Keeps the dot on the line */
+  }
+
+  /* Ensure the badge (e.g., DOORS OPEN) doesn't push text down */
+  .tl-badge {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 8px;
+    padding: 2px 8px;
+  }
+
+  .tl-name {
+    font-size: 15px;
+    padding-right: 60px; /* Leave space for the badge */
+    line-height: 1.4;
+  }
+
+  .tl-desc {
+    font-size: 12px;
+    line-height: 1.5;
+    width: 100%; /* Allow description to take full available width */
+  }
+}
+
 /* ─────────────────────────────────────────
    THE ROOM / ATTENDEES
 ───────────────────────────────────────── */
@@ -328,7 +374,11 @@ section { position: relative; z-index: 10; }
 .room-intro { font-size: 15px; font-weight: 300; color: var(--muted); margin-bottom: 40px; line-height: 1.8; }
 .room-intro span { color: var(--vb); }
 
-.profiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 2px; }
+/* The Room Cards: Ensure they don't get too squished */
+  .profiles {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 
 .pcard {
   background: var(--card); border: 1px solid var(--border);
@@ -537,7 +587,12 @@ footer {
   .num-card { border-right: none; border-bottom: 1px solid var(--border); padding: 28px; }
   .num-card:last-child { border-bottom: none; }
 }
-
+/* 2. Responsive Grids */
+@media (max-width: 768px) {
+  /* Hero Section Adjustments */
+  #hero { padding: 80px 0 40px; }
+  .hero-sub { font-size: 16px; width: 100%; }
+  
 /* scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
