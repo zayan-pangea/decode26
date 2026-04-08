@@ -375,20 +375,67 @@ section { position: relative; z-index: 10; }
 .room-intro span { color: var(--vb); }
 
 /* The Room Cards: Ensure they don't get too squished */
-  .profiles {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
+/* Restructure the grid for square blocks */
+.profiles {
+  display: grid;
+  /* Creates as many 200px+ squares as fit the width */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 15px;
+  width: 100%;
+}
 
 .pcard {
-  background: var(--card); border: 1px solid var(--border);
-  padding: 26px; transition: all 0.3s; cursor: default;
+  aspect-ratio: 1 / 1; /* Forces the box to stay a perfect square */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; /* Centers the text horizontally */
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.pcard:hover { border-color: rgba(245,166,35,0.4); background: rgba(245,166,35,0.02); transform: translateY(-3px); }
-.pcard.hl { background: var(--vdim); border-color: rgba(130,80,255,0.22); }
-.pcard.hl:hover { border-color: rgba(130,80,255,0.5); transform: translateY(-3px); }
 
-.pc-role { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; color: var(--am); text-transform: uppercase; margin-bottom: 10px; }
+.pcard:hover {
+  background: rgba(109, 40, 217, 0.08);
+  border-color: var(--v);
+  transform: scale(1.02); /* Subtle pop effect */
+  z-index: 2;
+}
+
+.pc-role {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--v);
+  margin-bottom: 12px;
+}
+
+.pc-title {
+  font-family: var(--disp);
+  font-size: clamp(18px, 4vw, 22px); /* Fluid size so it doesn't overflow */
+  line-height: 1.1;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  max-width: 90%; /* Prevents text from hitting the square edges */
+}
+
+/* Mobile Tweak: Ensure 2 squares per row on small screens instead of 1 large one */
+@media (max-width: 480px) {
+  .profiles {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .pc-title {
+    font-size: 14px;
+  }
+  .pc-role {
+    font-size: 8px;
+    margin-bottom: 8px;
+  }
+}
 .pcard.hl .pc-role { color: var(--vb); }
 .pc-title { font-size: 15px; font-weight: 400; color: var(--white); margin-bottom: 8px; }
 .pc-detail { font-size: 12px; 
@@ -652,7 +699,7 @@ footer {
       <span class="ping-txt">Invite only · 50 seats · Bengaluru · May 2026</span>
     </div>
 
-    <div class="hero-kicker">AI Sales Automation · Invite-Only · Bengaluru</div>
+    <div class="hero-kicker">The Sales Stack  · Invite-Only · Bengaluru</div>
 
     <h1 class="hero-title">
       <span class="ht-white">DE</span><span class="ht-ghost">CODE</span><br>
@@ -660,9 +707,9 @@ footer {
     </h1>
 
     <p class="hero-sub">
-      Bengaluru's sharpest AI Sales decision-makers. One Friday night. Off the record.<br>
+      Bengaluru's sales professionals. One Friday night. Off the record.<br>
       <strong>Energy up. Music on. Real talk about AI Sales Automation.</strong><br>
-      No panels. No pitches. No bullshit.
+      No panels. No pitches. No fluff.
     </p>
 
     <div class="hero-pill">An Invite-Only Evening &nbsp;—&nbsp; Friday Night, Bengaluru</div>
@@ -715,11 +762,11 @@ footer {
       </div>
       <div class="num-card reveal reveal-d2">
         <div class="num-val c">3</div>
-        <div class="num-label">Live AI Demos</div>
+        <div class="num-label">Product Showcases</div>
       </div>
       <div class="num-card reveal reveal-d3">
-        <div class="num-val w">0</div>
-        <div class="num-label">Vendor Pitches</div>
+        <div class="num-val w">100%</div>
+        <div class="num-label">Real Talk</div>
       </div>
     </div>
   </div>
@@ -741,23 +788,36 @@ footer {
         <span class="ac-icon">◈</span>
         <div class="ac-label">The Concept</div>
         <div class="ac-text">
-          <strong>Decode '26</strong> is a <span class="v">closed-door evening for 50 decision-makers</span> who evaluate, buy, and deploy AI Sales Automation tools across Bengaluru's B2B companies. Not a conference. Not a webinar. Not a vendor event.<br><br>
-          The name says it all — we're here to <span class="v">decode what's real</span> about AI Sales Automation from the hype, the noise, and the LinkedIn hot takes. Think: a private venue revealed closer to the date, <span class="a">good energy</span>, a curated playlist, and 50 of the city's sharpest sales technology decision-makers having the conversations that don't happen on stage.
-        </div>
+  <strong>Decode '26</strong> is a 
+  <span class="v">closed-door evening for 50 sales professionals</span> and the leaders behind them. 
+  People who live inside a sales stack every single day, open their CRM on Monday morning, run sequences, chase pipeline, and are now 
+  <span class="a">figuring out where AI genuinely fits</span> into all of that.<br><br>
+  
+  We are here to decode one thing: which AI tools are 
+  <span class="v">actually making sales professionals better</span> at their jobs, and which ones are just making the deck look good.
+</div>
       </div>
       <div class="about-card top-c reveal reveal-d1">
         <span class="ac-icon">⚡</span>
         <div class="ac-label">The Theme</div>
-        <div class="ac-text">
-          <strong>AI Sales Automation in 2026</strong> — automated outreach, agentic SDRs, intelligent pipeline management, and AI-led deal intelligence. What's actually working, what's been overhyped, and what's coming next. No theory. Just what practitioners are actually seeing.
-        </div>
+       <div class="ac-text">
+  <strong>The tools sales pros</strong> 
+  actually live in. <span class="v">CRMs, sequencing tools, AI dialers, intent data platforms, forecasting software.</span><br><br>
+  
+  What is worth paying for, <span class="v">what is getting replaced</span>, and 
+  <span class="a">what no one talks about</span> on demo calls.
+</div>
       </div>
       <div class="about-card top-a reveal reveal-d2">
-        <span class="ac-icon">🔒</span>
-        <div class="ac-label">The Code</div>
-        <div class="ac-text">
-          <strong>Chatham House Rule.</strong> Nothing leaves the room with attribution. No recording. No screenshots. No live-tweeting. What's decoded here, <span class="a">stays decoded here.</span> That's the deal.
-        </div>
+        <span class="ac-icon">🚪</span>
+       <div class="ac-label">The Code</div>
+<div class="ac-text">
+  <strong>Leave the Script at the Door</strong> — 
+  No positioning. No carefully worded answers. No version of yourself that you would put on a LinkedIn post.<br><br>
+  
+  Just an honest conversation about <span class="v">what is working</span>, what is not, and what the sales tools of 2026 
+  <span class="a">actually feel like from the inside.</span>
+</div>
       </div>
     </div>
   </div>
@@ -779,69 +839,84 @@ footer {
         <div class="tl-pip"></div>
         <div class="tl-time">19:00</div>
         <div class="tl-body">
-          <div class="tl-name">Doors Crack Open — Walk In, Get Loose</div>
-          <div class="tl-desc">The playlist is already running. The room is already charged. Walk in, settle in, and let it hit. No schedules, no badges, no forced energy — just the room doing its thing naturally.</div>
+          <div class="tl-name">Doors Crack Open</div>
+          <div class="tl-desc">The playlist is running. The room is charged. No forced energy—just the city's sharpest sales minds settling in before we drop the first truth.</div>
         </div>
         <div class="tl-badge ba">Doors Open</div>
       </div>
+
       <div class="tl-item">
         <div class="tl-pip"></div>
         <div class="tl-time">19:30</div>
         <div class="tl-body">
-          <div class="tl-name">The State of AI Sales — 10-min Rapid Fire</div>
-          <div class="tl-desc">Host drops 10 sharp data points on where AI Sales Automation actually stands in 2026 — adoption rates, real ROI numbers, failure patterns, and the tools Bengaluru companies are betting on. No deck. Just facts, fast.</div>
+          <div class="tl-name">Solo Talk — One Person. One Take. Ten Minutes.</div>
+          <div class="tl-desc">No slides. No fluff. One practitioner takes the floor to drop a decade’s worth of context on why the current sales stack is breaking—and how AI is either the glue or the hammer.</div>
         </div>
-        <div class="tl-badge bv">Rapid Fire</div>
+        <div class="tl-badge bv">Solo Take</div>
       </div>
+
       <div class="tl-item">
         <div class="tl-pip"></div>
         <div class="tl-time">19:45</div>
         <div class="tl-body">
-          <div class="tl-name">Live Demo Corner — AI Sales Tools, Unfiltered</div>
-          <div class="tl-desc">Three rotating stations. Each runs a live 8-min walkthrough: (1) Agentic SDR outreach in the wild, (2) AI-powered deal intelligence & pipeline scoring, (3) Automated follow-up and hyper-personalised sequences. Move freely. No forced attention.</div>
+          <div class="tl-name">AI Sales Tools in Action — What's Actually in the Stack</div>
+          <div class="tl-desc">We peel back the curtain. A live, unfiltered look at the agentic workflows, intent platforms, and dialers that are actually moving the needle in Bengaluru right now.</div>
         </div>
         <div class="tl-badge bc">Live & Raw</div>
       </div>
+
       <div class="tl-item">
         <div class="tl-pip"></div>
         <div class="tl-time">20:30</div>
         <div class="tl-body">
-          <div class="tl-name">The Decode Drop — Hot Takes, Open Floor</div>
-          <div class="tl-desc">Three spicy questions on AI Sales Automation hit the room. No stage, no podium, no hand-raising. Got a take? Throw it. 60 seconds each. The goal is sparks, not consensus. Facilitator keeps the energy crackling.</div>
+          <div class="tl-name">Rapid Fire — 10 Truths About the Sales Stack in 2026</div>
+          <div class="tl-desc">10 data points. 10 minutes. Real ROI numbers, failure patterns, and the brutal reality of what sales teams are betting on this year. Facts only.</div>
         </div>
-        <div class="tl-badge bv">Unfiltered</div>
+        <div class="tl-badge bv">Facts Fast</div>
       </div>
+
       <div class="tl-item">
         <div class="tl-pip"></div>
-        <div class="tl-time">21:15</div>
+        <div class="tl-time">20:45</div>
         <div class="tl-body">
-          <div class="tl-name">Round Two — The Room Opens Up</div>
-          <div class="tl-desc">The room resets. Host sparks 5 curated one-on-one collisions — people who genuinely need to know each other based on their AI Sales stack and buying stage. The rest? Pure organic energy.</div>
+          <div class="tl-name">The Panel — Is AI Actually Selling or Just Sitting in the Stack?</div>
+          <div class="tl-desc">A high-stakes cross-examination. We pit the believers against the skeptics to find out where the money is actually going and where it’s being wasted.</div>
         </div>
-        <div class="tl-badge ba">Electric</div>
+        <div class="tl-badge ba">Deep Dive</div>
       </div>
+
+      <div class="tl-item">
+        <div class="tl-pip"></div>
+        <div class="tl-time">21:30</div>
+        <div class="tl-body">
+          <div class="tl-name">The Decode Drop — Open Floor</div>
+          <div class="tl-desc">The floor belongs to the room. No hand-raising. Got a take? Throw it. The facilitator keeps the energy moving as we tear apart the night’s biggest takeaways.</div>
+        </div>
+        <div class="tl-badge bc">Unfiltered</div>
+      </div>
+
       <div class="tl-item">
         <div class="tl-pip"></div>
         <div class="tl-time">21:50</div>
         <div class="tl-body">
-          <div class="tl-name">The Decode Brief — One Line, Real Talk</div>
-          <div class="tl-desc">Everyone drops one sentence: the rawest thing they're walking away with tonight. Captured live. Shared with all 50 attendees within 72 hours. No fluff, no attribution.</div>
+          <div class="tl-name">The Decode Brief — Open Floor</div>
+          <div class="tl-desc">One line from everyone. The rawest thing you're walking away with tonight. No attribution. Captured live for the collective intelligence of the room.</div>
         </div>
-        <div class="tl-badge bc">Real Talk</div>
+        <div class="tl-badge bv">Real Talk</div>
       </div>
+
       <div class="tl-item">
         <div class="tl-pip"></div>
         <div class="tl-time">22:00</div>
         <div class="tl-body">
           <div class="tl-name">After Hours — The Night's Just Getting Started</div>
-          <div class="tl-desc">Music turns up. Lights go lower. The space stays open. Zero agenda. Some of the best partnerships, hires, and deals in Bengaluru have been born at this exact hour.</div>
+          <div class="tl-desc">Lights go lower. The space stays open. This is where the real deals and partnerships in Bengaluru are born. Zero agenda. Just the room.</div>
         </div>
         <div class="tl-badge bg">Stay On</div>
       </div>
     </div>
   </div>
 </section>
-
 <!-- ═══════════════════════════════════════
      THE ROOM
 ═══════════════════════════════════════ -->
@@ -854,49 +929,37 @@ footer {
     </div>
 
     <p class="room-intro reveal">
-      50 seats. Every one earned. Curated for one thing: <span>decision-making authority over AI Sales tools.</span> Zero vendor reps.
+      50 seats. Every one earned. Curated for one thing: <span>decision-making authority over the sales stack.</span> Every seat counts.
     </p>
 
     <div class="profiles">
       <div class="pcard reveal">
         <div class="pc-role">Primary Buyer</div>
         <div class="pc-title">VP Sales / Head of Sales</div>
-        <div class="pc-detail">Signs off on AI Sales Automation platforms. Highest decision-making weight in the room.</div>
       </div>
       <div class="pcard reveal reveal-d1">
-        <div class="pc-role">Revenue Strategy</div>
-        <div class="pc-title">Chief Revenue Officer</div>
-        <div class="pc-detail">Connects AI Sales tools to revenue outcomes. Drives the business case at board level.</div>
-      </div>
-      <div class="pcard reveal reveal-d2">
         <div class="pc-role">Tech Evaluator</div>
         <div class="pc-title">VP / Head of Sales Ops</div>
-        <div class="pc-detail">Evaluates, integrates, and manages the AI Sales stack daily. Makes or breaks adoption.</div>
-      </div>
-      <div class="pcard reveal reveal-d3">
-        <div class="pc-role">Demand Generation</div>
-        <div class="pc-title">VP Marketing / Head of Growth</div>
-        <div class="pc-detail">Controls AI outreach, lead scoring, top-of-funnel automation. Co-buyer of most SDR AI tools.</div>
-      </div>
-      <div class="pcard reveal">
-        <div class="pc-role">Platform Decision</div>
-        <div class="pc-title">CTO / IT Head</div>
-        <div class="pc-detail">Manages CRM integrations and data architecture that determines which AI tools are even viable.</div>
-      </div>
-      <div class="pcard reveal reveal-d1">
-        <div class="pc-role">Founder Buyer</div>
-        <div class="pc-title">CEO / Co-Founder (Series A–C)</div>
-        <div class="pc-detail">Making the first AI Sales Automation platform decision right now. High urgency, open mind.</div>
       </div>
       <div class="pcard reveal reveal-d2">
-        <div class="pc-role">Post-Sale AI</div>
-        <div class="pc-title">VP Customer Success</div>
-        <div class="pc-detail">Deploys AI for retention, health scoring, and expansion at the sales-to-success handoff.</div>
+        <div class="pc-role">Growth Lead</div>
+        <div class="pc-title">VP Marketing / Head of Growth</div>
       </div>
-      <div class="pcard hl reveal reveal-d3">
-        <div class="pc-role">Total</div>
-        <div class="pc-title">Decision-Maker Room</div>
-        <div class="pc-detail">B2B SaaS · Fintech · Healthtech · Manufacturing · Logistics — all Bengaluru-based.</div>
+      <div class="pcard reveal reveal-d3">
+        <div class="pc-role">Platform Lead</div>
+        <div class="pc-title">CTO / IT Head</div>
+      </div>
+      <div class="pcard reveal">
+        <div class="pc-role">Founder</div>
+        <div class="pc-title">CEO / Co-Founder (Series A–C)</div>
+      </div>
+      <div class="pcard reveal reveal-d1">
+        <div class="pc-role">Retention Lead</div>
+        <div class="pc-title">VP Customer Success</div>
+      </div>
+      <div class="pcard reveal reveal-d2">
+        <div class="pc-role">Frontline Leadership</div>
+        <div class="pc-title">Sales Manager / Regional Sales Head</div>
       </div>
     </div>
   </div>
@@ -918,15 +981,15 @@ footer {
     <div class="q-list">
       <div class="q-item reveal">
         <div class="q-num">01</div>
-        <div class="q-text">Your AI SDR is firing 500 personalised emails a day and response rates are climbing. But your best reps are quietly threatening to quit because they feel replaceable. <em>What do you do?</em></div>
+        <div class="q-text">Gartner — 75% of B2B sales orgs will use AI-guided selling by 2025. Yet the average rep still spends less than 30% of their time actually selling. <em>Which tool in your stack is solving that </em>— and which one is adding to the admin?</div>
       </div>
       <div class="q-item reveal reveal-d1">
         <div class="q-num">02</div>
-        <div class="q-text">You've evaluated six AI Sales Automation platforms in the last year. <em>What's the single biggest lie every vendor told you</em> — and what does the reality actually look like?</div>
+        <div class="q-text">McKinsey — Companies using AI in sales have seen revenue uplifts of up to 15% and cost reductions of up to 20%. <br>   <em>What does that number look like in your org </em> — and what did it actually take to get there?</div>
       </div>
       <div class="q-item reveal reveal-d2">
         <div class="q-num">03</div>
-        <div class="q-text">By 2028, Gartner says 60% of B2B seller interactions will happen through AI-driven interfaces. <em>Is your sales org actually ready for that</em> — or are you quietly hoping it doesn't happen that fast?</div>
+        <div class="q-text">Forrester — 68% of buyers prefer not to interact with a sales rep during the early stages of the buying process. <em>Is your sales stack built for a world where the first five touchpoints happen? </em>  before a human ever picks up the phone?</div>
       </div>
     </div>
   </div>
@@ -945,24 +1008,27 @@ footer {
 
     <div class="rules-grid">
       <div class="rule-card reveal">
-        <div class="rule-icon">🎤</div>
-        <div class="rule-name">No Pitching</div>
-        <div class="rule-body">This is not a sales event. If you're here to pitch, we've made a mistake on the invite. The night has better things in store and we'd hate to waste that on you.</div>
+        <div class="rule-icon">🤙</div>
+        <div class="rule-name">Stays at Decode</div>
+        <div class="rule-body">What happens here, stays here. Share the insights, but never the attribution. No recording, no screenshots, no live-tweeting. Protect the room’s honesty.</div>
       </div>
+
       <div class="rule-card reveal reveal-d1">
-        <div class="rule-icon">🔇</div>
-        <div class="rule-name">Chatham House Rule</div>
-        <div class="rule-body">Everything said in this room is off-record. Share insights. Never attribute them. No screenshots. No live-tweeting. Decode it, don't broadcast it.</div>
+        <div class="rule-icon">🎤</div>
+        <div class="rule-name">Say It Like You Mean It</div>
+        <div class="rule-body">Leave the corporate script at the door. No positioning. No carefully worded PR answers. Just raw, honest takes on what is actually working in your stack.</div>
       </div>
+
       <div class="rule-card reveal reveal-d2">
-        <div class="rule-icon">📵</div>
-        <div class="rule-name">No Recording</div>
-        <div class="rule-body">No audio. No video. Phones down during sessions. The only record is the Decode Brief — authored collectively by the room.</div>
+        <div class="rule-icon">🪄</div>
+        <div class="rule-name">Come Curious, Leave Smarter</div>
+        <div class="rule-body">This isn't a vendor pitch. We're here to tear apart the hype and find the signal in the noise. Ask the hard questions; give the real answers.</div>
       </div>
+
       <div class="rule-card reveal reveal-d3">
-        <div class="rule-icon">🪑</div>
-        <div class="rule-name">Show Up</div>
-        <div class="rule-body">We hold your seat until 7:15 PM. Can't make it? 48 hours notice. Someone is genuinely waiting for that seat.</div>
+        <div class="rule-icon">🎯</div>
+        <div class="rule-name">No Seat Warmers</div>
+        <div class="rule-body">Every seat is earned and the floor is open. If you're in the room, you're in the conversation. We hold your seat until 7:15 PM—after that, it goes to the waitlist.</div>
       </div>
     </div>
   </div>
