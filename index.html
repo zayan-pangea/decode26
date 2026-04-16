@@ -573,8 +573,17 @@ footer {
 }
 @media(max-width:700px) { .foot-inner { grid-template-columns: 1fr; } }
 
-.foot-brand { font-family: var(--disp); font-size: 28px; letter-spacing: 0.06em; color: var(--faint); }
-.foot-brand span { color: var(--v); }
+.foot-brand {
+  font-family: var(--disp);
+  font-size: 24px;
+  letter-spacing: 0.05em;
+  color: var(--v); /* This makes the entire text purple */
+  margin-bottom: 15px;
+}
+
+.foot-brand span {
+  color: var(--v); /* Ensures the 'D' stays purple as well */
+}
 .foot-tagline { font-size: 12px; font-weight: 300; color: var(--faint); margin-top: 8px; line-height: 1.6; }
 
 .foot-col-title { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--faint); text-transform: uppercase; margin-bottom: 16px; }
